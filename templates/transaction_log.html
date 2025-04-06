@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bewegungsprotokoll</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        .filter-container {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-container label {
+            margin-right: 5px;
+        }
+        .filter-container input, .filter-container select {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .filter-container button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .filter-container button:hover {
+            background-color: #45a049;
+        }
+        .export-button {
+            display: inline-block;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background-color: #007BFF;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .export-button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Bewegungsprotokoll für {{ lager.name }}</h1>
+
+    <!-- Filterformular -->
+    <form method="GET" action="">
+        <div class="filter-container">
+            <label for="type">Typ:</label>
+            <select name="type" id="type">
+                <option value="">Alle</option>
+                <option value="in" {% if request.GET.type == "in" %}selected{% endif %}>Eingang</option>
+                <option value="out" {% if request.GET.type == "out" %}selected{% endif %}>Ausgang</option>
+            </select>
+
+            <label for="start_date">Startdatum:</label>
+            <input type="date" name="start_date" id="start_date" value="{{ request.GET.start_date }}">
+
+            <label for="end_date">Enddatum:</label>
+            <input type="date" name="end_date" id="end_date" value="{{ request.GET.end_date }}">
+
+            <button type="submit">Filtern</button>
+        </div>
+    </form>
+
+    <!-- CSV-Export-Button -->
+    <a href="{% url 'transaction_export_csv' lager.id %}?type={{ request.GET.type }}&start_date={{ request.GET.start_date }}&end_date={{ request.GET.end_date }}" class="export-button">
+        Exportieren als CSV
+    </a>
+
+    <!-- Tabelle für Bewegungsprotokoll -->
+    <table>
+        <thead>
+            <tr>
+                <th>Datum</th>
+                <th>Artikel</th>
+                <th>Typ</th>
+                <th>Menge</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+            <tr>
+                <td>{{ transaction.date }}</td>
+                <td>{{ transaction.article.name }}</td>
+                <td>{{ transaction.get_type_display }}</td>
+                <td>{{ transaction.quantity }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if transactions|length == 0 %}
+    <p>Keine Transaktionen gefunden.</p>
+    {% endif %}
+
+</body>
+</html>

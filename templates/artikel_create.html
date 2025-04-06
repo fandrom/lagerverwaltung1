@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+<div class="d-flex justify-content-between align-items-center mb-2">
+<a href="{% url 'artikel_management' lager.id %}" class="btn btn-secondary mb-3">← Zurück</a>
+
+        <h2 class="fw-bold">Neuen Artikel zu Lager: {{ lager.name }} hinzufügen</h2>
+    </div>
+
+    <!-- Formular -->
+    <div class="card shadow p-4">
+        <form method="POST"  enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <!-- Formulardaten -->
+            <div class="form-group mb-3">
+                <label for="artikel_name" class="form-label">Artikelname:</label>
+                {{ form.name }}
+            </div>
+            <div class="form-group mb-3">
+                <label for="menge" class="form-label">Menge:</label>
+                {{ form.menge }}
+            </div>
+            <div class="form-group mb-3">
+                <label for="foto" class="form-label">Artikelbild:</label>
+                {{ form.foto }}
+            </div>
+
+
+            <!-- Speichern-Button -->
+            <div class="text-right">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-plus-circle me-2"></i> Artikel erstellen
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
